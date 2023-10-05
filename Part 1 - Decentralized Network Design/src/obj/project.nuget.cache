@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "bTDmgsKFPiqvPUwAYkhBJ0CsPgsFIcZ0GWt8mnbwizpJNV4u+/48xMYzBKc7rLLxlQKqlQ2TFqkt7buzTH9W6w==",
+  "success": true,
+  "projectFilePath": "/Users/umit.aksoylu/Documents/private/BlockchainNetworkFromScratch/Part 1 - Decentralized Network Design/src/src.csproj",
+  "expectedPackageFiles": [
+    "/Users/umit.aksoylu/.nuget/packages/json-rpc.net-core/1.0.0/json-rpc.net-core.1.0.0.nupkg.sha512",
+    "/Users/umit.aksoylu/.nuget/packages/newtonsoft.json/12.0.2/newtonsoft.json.12.0.2.nupkg.sha512",
+    "/Users/umit.aksoylu/.nuget/packages/yamldotnet/13.4.0/yamldotnet.13.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}

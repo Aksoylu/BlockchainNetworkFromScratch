@@ -1,0 +1,9 @@
+server_ip: "localhost"
+port: 8080
+node_version: 14.0
+node_api_path: "jsonrpc"
+metadata_path: "../metadata"
+peer_endpoints:
+  - "peer1.example.com:8080/jsonrpc"
+  - "peer2.example.com:8080/jsonrpc"
+  - "peer3.example.com:8080/jsonrpc"

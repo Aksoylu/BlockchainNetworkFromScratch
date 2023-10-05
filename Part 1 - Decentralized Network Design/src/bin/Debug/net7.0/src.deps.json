@@ -1,0 +1,75 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "src/1.0.0": {
+        "dependencies": {
+          "JSON-RPC.Net-Core": "1.0.0",
+          "YamlDotNet": "13.4.0"
+        },
+        "runtime": {
+          "src.dll": {}
+        }
+      },
+      "JSON-RPC.Net-Core/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.2"
+        },
+        "runtime": {
+          "lib/netcoreapp2.2/JSON-RPC.Net-Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/12.0.2": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.0.2.23222"
+          }
+        }
+      },
+      "YamlDotNet/13.4.0": {
+        "runtime": {
+          "lib/net7.0/YamlDotNet.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.4.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "src/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "JSON-RPC.Net-Core/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Bk8X3N563xATHFbBiv4jV1IJu6w7T3h1bp7tjZuM8otMW6p9U+NgmMRtvYHstwHf/9YmmUCla5woFHAsZXMxfg==",
+      "path": "json-rpc.net-core/1.0.0",
+      "hashPath": "json-rpc.net-core.1.0.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/12.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rTK0s2EKlfHsQsH6Yx2smvcTCeyoDNgCW7FEYyV01drPlh2T243PR2DiDXqtC5N4GDm4Ma/lkxfW5a/4793vbA==",
+      "path": "newtonsoft.json/12.0.2",
+      "hashPath": "newtonsoft.json.12.0.2.nupkg.sha512"
+    },
+    "YamlDotNet/13.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XkqTRgpt/tkqX9sOKcdPAZLVMktR5sBFwt7aK/PP061k9yoUntr/Qc8o9KshjSte34WYTIuCrpBs1+LwR7dFdA==",
+      "path": "yamldotnet/13.4.0",
+      "hashPath": "yamldotnet.13.4.0.nupkg.sha512"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/umit.aksoylu/Documents/private/BlockchainNetworkFromScratch/Part 1 - Decentralized Network Design/src/src.csproj": {}
+  },
+  "projects": {
+    "/Users/umit.aksoylu/Documents/private/BlockchainNetworkFromScratch/Part 1 - Decentralized Network Design/src/src.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/umit.aksoylu/Documents/private/BlockchainNetworkFromScratch/Part 1 - Decentralized Network Design/src/src.csproj",
+        "projectName": "src",
+        "projectPath": "/Users/umit.aksoylu/Documents/private/BlockchainNetworkFromScratch/Part 1 - Decentralized Network Design/src/src.csproj",
+        "packagesPath": "/Users/umit.aksoylu/.nuget/packages/",
+        "outputPath": "/Users/umit.aksoylu/Documents/private/BlockchainNetworkFromScratch/Part 1 - Decentralized Network Design/src/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/umit.aksoylu/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "JSON-RPC.Net-Core": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "YamlDotNet": {
+              "target": "Package",
+              "version": "[13.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.401/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
