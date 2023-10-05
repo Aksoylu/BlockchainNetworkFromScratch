@@ -191,8 +191,13 @@ class PeerService
         peerRepository.Add(peerModel);
     }
 
-    private bool isSenderBanned(string senderIp)
+    private bool isSenderBanned(string? senderIp)
     {
+        if(senderIp == null)
+        {
+            return false;
+        }
+
         for(int i = 0; i < peerRepository.Count; i++)
         {
             PeerModel eachPeer = peerRepository[i];
@@ -204,8 +209,13 @@ class PeerService
         return false;
     }
 
-    private bool isSenderSelf(string senderIp)
+    private bool isSenderSelf(string? senderIp)
     {
+        if(senderIp == null)
+        {
+            return true;
+        }
+
         List<string> preventList = new List<string>
         {
             "localhost",
