@@ -22,5 +22,5 @@ class RuntimeConfig
     [YamlMember(Alias = "peer_endpoints")]
     public required List<string> PeerEndpoints { get; set; }
 
-    public bool IsGenesisBlock {get; set;}
+    public bool IsGenesisNode {get; set;}
 }

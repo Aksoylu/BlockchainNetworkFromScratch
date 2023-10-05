@@ -24,34 +24,41 @@ class RpcRequest
     // Sends same content to all peers async
     public static async void SendBroadcast(List<string> endpointList, string method, JToken payload)
     {
-        String eachResponseData = new JObject
+        try
         {
-            ["jsonrpc"] = "2.0",
-            ["method"] = method,
-            ["params"] = payload,
-            ["id"] = 1
-        }.ToString();
-
-        HttpClient client = new HttpClient();
-        List<HttpRequestMessage> requestList = new List<HttpRequestMessage>();
-        List<Task<HttpResponseMessage>> responseList = new List<Task<HttpResponseMessage>>();
-        
-        endpointList.ForEach(eachEndpoint => {
-            HttpRequestMessage eachRequest = new HttpRequestMessage(HttpMethod.Post, eachEndpoint)
+            String eachResponseData = new JObject
             {
-                Content = new StringContent(eachResponseData, null, "application/json")
-            };
+                ["jsonrpc"] = "2.0",
+                ["method"] = method,
+                ["params"] = payload,
+                ["id"] = 1
+            }.ToString();
 
-            Task<HttpResponseMessage> eachResponse = client.SendAsync(eachRequest);
+            HttpClient client = new HttpClient();
+            List<HttpRequestMessage> requestList = new List<HttpRequestMessage>();
+            List<Task<HttpResponseMessage>> responseList = new List<Task<HttpResponseMessage>>();
 
-            responseList.Add(eachResponse);
-        });
+            endpointList.ForEach(eachEndpoint => {
+                HttpRequestMessage eachRequest = new HttpRequestMessage(HttpMethod.Post, $"http://{eachEndpoint}")
+                {
+                    Content = new StringContent(eachResponseData, null, "application/json")
+                };
 
-        IEnumerable<HttpResponseMessage> sendedResponseList = await Task.WhenAll(responseList);
+                responseList.Add(client.SendAsync(eachRequest));
+            });
 
-        foreach(HttpResponseMessage eachSendedResponseMessage in sendedResponseList)
+            IEnumerable<HttpResponseMessage> sendedResponseList = await Task.WhenAll(responseList);
+
+        
+            foreach(HttpResponseMessage eachSendedResponseMessage in sendedResponseList)
+            {
+                eachSendedResponseMessage.EnsureSuccessStatusCode();
+            }    
+        }
+        catch(Exception e)
         {
-            eachSendedResponseMessage.EnsureSuccessStatusCode();
-        }        
+            Console.WriteLine($"Broadcast error: {e.ToString()}");
+        }
+           
     }
 }

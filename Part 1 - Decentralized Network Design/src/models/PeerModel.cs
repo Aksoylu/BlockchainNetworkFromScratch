@@ -18,7 +18,7 @@ class PeerModel
         return $"{ipAddress}:{port}/{apiPath}"; 
     }
 
-    private string endpointParserPattern = @"^(\d+\.\d+\.\d+\.\d+):(\d+)/(.+)$";
+    private string endpointParserPattern = @"^(.*?):(\d+)/(.*)$";
 
     [JsonConstructor]
     public PeerModel(string ipAddress, int port, double version, string apiPath)

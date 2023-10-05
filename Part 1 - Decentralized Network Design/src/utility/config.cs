@@ -22,8 +22,8 @@ class Config
             // Deserialize the YAML into your C# class
             RuntimeConfig config = deserializer.Deserialize<RuntimeConfig>(yamlContent);
             
-            // Decide Block Is Genesis
-            config.IsGenesisBlock = IsGenesisBlock(config);
+            // Decide Node Is Genesis
+            config.IsGenesisNode = IsGenesisNode(config);
 
             Config.RuntimeConfig = config;
         }
@@ -33,7 +33,7 @@ class Config
         }
     }
 
-    private static bool IsGenesisBlock(RuntimeConfig config)
+    private static bool IsGenesisNode(RuntimeConfig config)
     {
         return (config.PeerEndpoints.Count == 1 && config.PeerEndpoints[0] == "GENESIS");
     }

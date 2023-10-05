@@ -89,7 +89,6 @@ class RpcServerModule
         string methodName = requestObject["method"].ToString();
         JToken parameters = requestObject["params"];
         parameters["server_ip"] = ipAddress;
-        Console.WriteLine(parameters);
         JToken? result = peerservice?.executePeerService(methodName, parameters);
 
         // Build and return the JSON-RPC response

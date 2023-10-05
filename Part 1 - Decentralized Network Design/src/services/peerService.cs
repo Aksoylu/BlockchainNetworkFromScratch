@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Data;
 using System.Reflection;
 using System.Security.Authentication;
 using Microsoft.CSharp.RuntimeBinder;
@@ -13,19 +14,21 @@ class PeerService
 
     public PeerService()
     {
-        if(!Config.RuntimeConfig.IsGenesisBlock && Config.RuntimeConfig.PeerEndpoints.Count != 0)
+        if(!Config.RuntimeConfig.IsGenesisNode && Config.RuntimeConfig.PeerEndpoints.Count != 0)
         {
-            peerRepository = loadPeerRepositoryFromConfig(Config.RuntimeConfig.PeerEndpoints);
+            try
+            {
+                peerRepository = loadPeerRepositoryFromConfig(Config.RuntimeConfig.PeerEndpoints);
+            }
+            catch(Exception e)
+            {
+                throw new DataException($"Peers in config.yaml cannot be readed. Please check. {e.ToString()}");
+            }
         }
         
         this.peerPath = $"{Config.RuntimeConfig.MetaDataPath}/peers.json";
 
         peerRepository = peerRepository.Concat(loadPeerRepository()).ToList();
-
-        for(int i = 0; i < peerRepository.Count; i++)
-        {
-            Console.WriteLine(peerRepository[i].GetEndpoint());
-        }
     }
 
     public JToken executePeerService(string methodName, JToken parameters)
@@ -76,10 +79,10 @@ class PeerService
         {
             throw new AuthenticationException("Peer IP is already exist in network");
         }
+        executeNewNodeBroadcast(nodeIp, port, version, apiPath);
 
         addToPeerRepository(nodeIp, port, version, apiPath);
         dumpPeerRepository();
-        executeNewNodeBroadcast(nodeIp, port, version, apiPath);
 
         JObject response =  new JObject();
         response["result"] = "OK";
@@ -98,7 +101,11 @@ class PeerService
             if(!eachPeer.trust)
                 continue;
 
-            peerEndpointList.Add(eachPeer.GetEndpoint());
+            string eachEndpoint = eachPeer.GetEndpoint();
+            if(eachEndpoint != "" || eachEndpoint != null)
+            {
+                peerEndpointList.Add(eachPeer.GetEndpoint());
+            }
         }
 
         JObject responseData = new JObject
@@ -163,10 +170,6 @@ class PeerService
     private List<PeerModel> loadPeerRepository()
     {
         List<PeerModel> loadedPeerList = Storage.LoadFromJsonFile<List<PeerModel>>(peerPath) ?? new List<PeerModel>();
-        for(int i = 0; i < loadedPeerList.Count; i++)
-        {
-            Console.WriteLine(loadedPeerList[i].GetEndpoint());
-        }
         return loadedPeerList;
     }
 
