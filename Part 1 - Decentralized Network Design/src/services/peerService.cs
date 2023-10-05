@@ -80,11 +80,6 @@ class PeerService
             throw new AuthenticationException("Peer IP is already exist in network");
         }
 
-        if(isSenderSelf(serverIp))
-        {
-            throw new AuthenticationException("Beware deadlock !");
-        }
-
         executeNewNodeBroadcast(nodeIp, port, version, apiPath);
 
         addToPeerRepository(nodeIp, port, version, apiPath);
