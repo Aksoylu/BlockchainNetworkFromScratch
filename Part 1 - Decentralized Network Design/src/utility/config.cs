@@ -9,7 +9,7 @@ class Config
 
     public static void Load()
     {
-        string yamlFilePath = "./config.yaml"; // Replace with the path to your YAML file
+        string yamlFilePath = "../config.yaml"; // Replace with the path to your YAML file
 
         try
         {
