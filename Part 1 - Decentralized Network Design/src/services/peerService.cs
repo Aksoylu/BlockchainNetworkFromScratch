@@ -51,13 +51,13 @@ class PeerService
 
     /**
     * @string {server_ip}: set by system
+    * @string {node_ip}
     * @int {port}
     * @double {version}
     * @string {api_path}
     */
     public JToken registerNewNode(JToken parameters)
     {
-        // Sender server ip
         string? serverIp = (string)parameters["server_ip"] ?? null;
 
         string? nodeIp = (string)parameters["node_ip"] ?? null;
@@ -79,17 +79,61 @@ class PeerService
         {
             throw new AuthenticationException("Peer IP is already exist in network");
         }
+
+        if(isSenderSelf(serverIp))
+        {
+            throw new AuthenticationException("Beware deadlock !");
+        }
+
         executeNewNodeBroadcast(nodeIp, port, version, apiPath);
 
         addToPeerRepository(nodeIp, port, version, apiPath);
         dumpPeerRepository();
 
-        JObject response =  new JObject();
-        response["result"] = "OK";
+        JObject response =  new JObject
+        {
+            ["result"] = "OK"
+        };
+
         return response;
     }
 
-    // Excludes untrusted peers and sends data to all peers 
+    /**
+    * @string {server_ip}: set by system
+    * @string {node_ip}
+    * @int {port}
+    * @double {version}
+    * @string {api_path}
+    */
+    public JToken sayHello(JToken parameters)
+    {
+        Console.WriteLine("HELLO !");
+
+        string? serverIp = (string)parameters["server_ip"] ?? null;
+
+        if(isSenderBanned(serverIp))
+        {
+            throw new AuthenticationException("Sender peer is banner from network");
+        }
+
+        if(isSenderSelf(serverIp))
+        {
+            return new JObject
+            {
+                ["result"] = "OK, but process killed for avoiding deadlock",
+            };
+        }
+
+        executeHelloBroadcast($"hello from {serverIp}");
+        JObject response =  new JObject
+        {
+            ["result"] = "OK",
+        };
+
+        return response;
+    }
+
+    // Excludes untrusted peers and sends new node data to all peers 
     private void executeNewNodeBroadcast(string nodeIp, int port, double version, string apiPath)
     {
         List<string> peerEndpointList = new List<string>();
@@ -119,6 +163,33 @@ class PeerService
         RpcRequest.SendBroadcast(peerEndpointList, "registerNewNode", responseData);
     }
 
+     // Excludes untrusted peers and sends hello message all peers 
+    private void executeHelloBroadcast(string message)
+    {
+        List<string> peerEndpointList = new List<string>();
+
+        for(int i = 0; i < peerRepository.Count; i++)
+        {
+            PeerModel eachPeer = peerRepository[i];
+
+            if(!eachPeer.trust)
+                continue;
+
+            string eachEndpoint = eachPeer.GetEndpoint();
+            if(eachEndpoint != "" || eachEndpoint != null)
+            {
+                peerEndpointList.Add(eachPeer.GetEndpoint());
+            }
+        }
+
+        JObject responseData = new JObject
+        {
+             ["message"] = message
+        };
+
+        RpcRequest.SendBroadcast(peerEndpointList, "sayHello", responseData);
+    }
+
     private void addToPeerRepository(string serverIp, int port, double version, string  apiPath)
     {
         PeerModel peerModel = new PeerModel(serverIp, port, version, apiPath);
@@ -136,6 +207,19 @@ class PeerService
             }
         }
         return false;
+    }
+
+    private bool isSenderSelf(string senderIp)
+    {
+        List<string> preventList = new List<string>
+        {
+            "localhost",
+            "127.0.0.1",
+            "::1",
+            Config.RuntimeConfig.ServerIp
+        };
+
+        return preventList.Contains(senderIp);
     }
 
     private bool isPeerExist(string serverIp)
