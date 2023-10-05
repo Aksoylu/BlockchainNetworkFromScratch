@@ -13,12 +13,12 @@ class PeerService
 
     public PeerService()
     {
-        if(!ConfigModule.RuntimeConfig.IsGenesisBlock && ConfigModule.RuntimeConfig.PeerEndpoints.Count != 0)
+        if(!Config.RuntimeConfig.IsGenesisBlock && Config.RuntimeConfig.PeerEndpoints.Count != 0)
         {
-            peerRepository = loadPeerRepositoryFromConfig(ConfigModule.RuntimeConfig.PeerEndpoints);
+            peerRepository = loadPeerRepositoryFromConfig(Config.RuntimeConfig.PeerEndpoints);
         }
         
-        this.peerPath = $"{ConfigModule.RuntimeConfig.MetaDataPath}/peers.json";
+        this.peerPath = $"{Config.RuntimeConfig.MetaDataPath}/peers.json";
 
         peerRepository = peerRepository.Concat(loadPeerRepository()).ToList();
 
@@ -54,48 +54,81 @@ class PeerService
     */
     public JToken registerNewNode(JToken parameters)
     {
+        // Sender server ip
         string? serverIp = (string)parameters["server_ip"] ?? null;
+
+        string? nodeIp = (string)parameters["node_ip"] ?? null;
         int port = (int)parameters["port"];
         double version = (double)parameters["version"];
         string? apiPath = (string)parameters["api_path"] ?? null;
 
-        if(serverIp == null || port == 0 || version == 0 || apiPath == null)
+        if(serverIp == null || nodeIp == null || port == 0 || version == 0 || apiPath == null)
         {
             throw new WarningException("parameter mismatch");
         }
 
-        if(isPeerExist(serverIp))
+        if(isSenderBanned(serverIp))
         {
-            throw new AuthenticationException("Peer IP is banned from network");
+            throw new AuthenticationException("Sender peer is banner from network");
         }
-        addToPeerRepository(serverIp, port, version, apiPath);
-        dumpPeerRepository();
 
-        executeBroadcast(serverIp, port, version, apiPath);
+        if(isPeerExist(nodeIp))
+        {
+            throw new AuthenticationException("Peer IP is already exist in network");
+        }
+
+        addToPeerRepository(nodeIp, port, version, apiPath);
+        dumpPeerRepository();
+        executeNewNodeBroadcast(nodeIp, port, version, apiPath);
 
         JObject response =  new JObject();
         response["result"] = "OK";
         return response;
     }
 
-    // TODO
-    private void executeBroadcast(string serverIp, int port, double version, string apiPath)
+    // Excludes untrusted peers and sends data to all peers 
+    private void executeNewNodeBroadcast(string nodeIp, int port, double version, string apiPath)
     {
+        List<string> peerEndpointList = new List<string>();
+
         for(int i = 0; i < peerRepository.Count; i++)
         {
             PeerModel eachPeer = peerRepository[i];
+
             if(!eachPeer.trust)
                 continue;
 
-            String endpoint = eachPeer.GetEndpoint();
-            // TODO : Send rpc request except banneds here...
-        } 
+            peerEndpointList.Add(eachPeer.GetEndpoint());
+        }
+
+        JObject responseData = new JObject
+        {
+             ["nodeIp"] = nodeIp,
+             ["port"] = port,
+             ["version"] = version,
+             ["apiPath"] = apiPath
+        };
+
+        RpcRequest.SendBroadcast(peerEndpointList, "registerNewNode", responseData);
     }
 
     private void addToPeerRepository(string serverIp, int port, double version, string  apiPath)
     {
         PeerModel peerModel = new PeerModel(serverIp, port, version, apiPath);
         peerRepository.Add(peerModel);
+    }
+
+    private bool isSenderBanned(string senderIp)
+    {
+        for(int i = 0; i < peerRepository.Count; i++)
+        {
+            PeerModel eachPeer = peerRepository[i];
+            if(eachPeer.ipAddress == senderIp && !eachPeer.trust)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private bool isPeerExist(string serverIp)
@@ -112,14 +145,24 @@ class PeerService
         return false;
     }
 
+    // Write all peers to file.
+    // Do not write peers that already existing in config.yaml
     private void dumpPeerRepository()
     {
-        StorageModule.WriteToJsonFile(peerPath, peerRepository);
+        List<PeerModel> cleanedPeerRepository = new List<PeerModel>();
+        peerRepository.ForEach(eachPeer => {
+            if(!Config.RuntimeConfig.PeerEndpoints.Contains(eachPeer.GetEndpoint()))
+            {
+                cleanedPeerRepository.Add(eachPeer);
+            }
+        });
+
+        Storage.WriteToJsonFile(peerPath, cleanedPeerRepository);
     }
 
     private List<PeerModel> loadPeerRepository()
     {
-        List<PeerModel> loadedPeerList = StorageModule.LoadFromJsonFile<List<PeerModel>>(peerPath) ?? new List<PeerModel>();
+        List<PeerModel> loadedPeerList = Storage.LoadFromJsonFile<List<PeerModel>>(peerPath) ?? new List<PeerModel>();
         for(int i = 0; i < loadedPeerList.Count; i++)
         {
             Console.WriteLine(loadedPeerList[i].GetEndpoint());

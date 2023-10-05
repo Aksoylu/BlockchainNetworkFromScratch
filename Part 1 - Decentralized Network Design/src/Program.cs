@@ -10,10 +10,16 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        ConfigModule.Load();
+        Config.Load();
+        if(Config.RuntimeConfig == null)
+        {
+            throw new SystemException("JSON-RPC server cannot started");
+        }
 
         PeerService peerService = new PeerService();
-        await RpcModule.startRpcServer(peerService);
+
+        RpcServerModule rpcServer = new RpcServerModule(peerService);
+        await rpcServer.start(peerService);
     }
     
 }

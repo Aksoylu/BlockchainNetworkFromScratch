@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace BlockchainNetwork;
 
-class ConfigModule
+class Config
 {
     public static RuntimeConfig RuntimeConfig {get; private set;}
 
@@ -25,7 +25,7 @@ class ConfigModule
             // Decide Block Is Genesis
             config.IsGenesisBlock = IsGenesisBlock(config);
 
-            ConfigModule.RuntimeConfig = config;
+            Config.RuntimeConfig = config;
         }
         catch (Exception e)
         {

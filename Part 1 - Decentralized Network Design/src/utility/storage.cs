@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace BlockchainNetwork;
 
-class StorageModule
+class Storage
 {
     // Method to write JSON data to a file
     public static void WriteToJsonFile(string filePath, object data)

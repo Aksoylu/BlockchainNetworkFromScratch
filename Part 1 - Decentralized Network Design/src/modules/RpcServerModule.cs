@@ -1,24 +1,23 @@
+using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
 namespace BlockchainNetwork;
 
-class RpcModule
+class RpcServerModule
 {
-    public static RuntimeConfig? runtimeConfig {get; private set;}
-    public static PeerService? peerservice {get; private set;}
+    public RuntimeConfig runtimeConfig {get; private set;}
+    public PeerService peerservice {get; private set;}
 
-    public static async Task startRpcServer(PeerService peerservice)
+    public RpcServerModule(PeerService peerservice)
     {
-        if(ConfigModule.RuntimeConfig == null)
-        {
-            throw new SystemException("JSON-RPC server cannot started");
-        }
+        this.runtimeConfig = Config.RuntimeConfig;
+        this.peerservice = peerservice;
+    }
 
-        RpcModule.runtimeConfig = ConfigModule.RuntimeConfig;
-        RpcModule.peerservice = peerservice;
-
+    public async Task start(PeerService peerservice)
+    {
         string serverUrl = $"http://{runtimeConfig.ServerIp}:{runtimeConfig.Port}/{runtimeConfig.NodeApiPath}/";
         HttpListener listener = new HttpListener();
         listener.Prefixes.Add(serverUrl);
@@ -29,11 +28,18 @@ class RpcModule
         while (true)
         {
             HttpListenerContext context = await listener.GetContextAsync();
-            HandleRequest(context);
+            try
+            {
+                this.handleRequest(context);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Exception Occured: {e.ToString()}");
+            }
         }
     }
 
-    static async void HandleRequest(HttpListenerContext context)
+    private async void handleRequest(HttpListenerContext context)
     {
         HttpListenerRequest request = context.Request;
         HttpListenerResponse response = context.Response;
@@ -53,7 +59,6 @@ class RpcModule
             using (StreamReader reader = new StreamReader(request.InputStream))
             {
                 string requestBody = await reader.ReadToEndAsync();
-                Console.WriteLine($"Received Request: {requestBody}");
 
                 // Handle the JSON-RPC request here
                 string jsonResponse = HandleJsonRpcRequest(ipAddress, requestBody);
@@ -78,13 +83,13 @@ class RpcModule
         response.Close();
     }
 
-    static string HandleJsonRpcRequest(string ipAddress, string requestBody)
+    private string HandleJsonRpcRequest(string ipAddress, string requestBody)
     {
         JObject requestObject = JObject.Parse(requestBody);
         string methodName = requestObject["method"].ToString();
         JToken parameters = requestObject["params"];
         parameters["server_ip"] = ipAddress;
-
+        Console.WriteLine(parameters);
         JToken? result = peerservice?.executePeerService(methodName, parameters);
 
         // Build and return the JSON-RPC response

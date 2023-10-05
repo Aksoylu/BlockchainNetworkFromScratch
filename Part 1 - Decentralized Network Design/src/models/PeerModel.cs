@@ -1,4 +1,6 @@
+using System.Data;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace BlockchainNetwork;
 
@@ -16,6 +18,8 @@ class PeerModel
         return $"{ipAddress}:{port}/{apiPath}"; 
     }
 
+    private string endpointParserPattern = @"^(\d+\.\d+\.\d+\.\d+):(\d+)/(.+)$";
+
     [JsonConstructor]
     public PeerModel(string ipAddress, int port, double version, string apiPath)
     {
@@ -29,11 +33,18 @@ class PeerModel
 
     public PeerModel(string peerUrl)
     {
-        this.ipAddress = peerUrl;
-        this.port = 1;
-        this.version = 1;
-        this.apiPath = "apiPath";
-        this.serverHash = "Crypt.HashSha256(this.ipAddress)";
+        Match match = Regex.Match(peerUrl, endpointParserPattern);
+        if (!match.Success)
+        {
+            throw new DataException("Peer url is invalid");
+        }
+
+        //peer1.example.com:8080/jsonrpc
+        this.ipAddress = match.Groups[1].Value;
+        this.port = Convert.ToInt32(match.Groups[2].Value);
+        this.version = Config.RuntimeConfig.NodeVersion;
+        this.apiPath = match.Groups[3].Value;
+        this.serverHash = Crypt.HashSha256(this.ipAddress);
         this.trust = true;
     }
 }
