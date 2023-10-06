@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "5624bd53-c712-4924-9f36-4fa9931ec8bc",
+		"name": "BlockchainNetworkFromScratch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29888869"
+	},
+	"item": [
+		{
+			"name": "registerNewNode JsonRpc Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"registerNewNode\",\n    \"params\": {\n        \"node_ip\": \"127.0.0.2\",\n        \"port\": \"1212\",\n        \"version\": 14,\n        \"api_path\": \"jsonrpc\"\n    },\n    \"id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/jsonrpc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jsonrpc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Hello JsonRpc Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"sayHello\",\n    \"params\": {},\n    \"id\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/jsonrpc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jsonrpc"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
